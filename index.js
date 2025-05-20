@@ -11,7 +11,6 @@ app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.to037gz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-console.log(process.env.DB_USER,process.env.DB_PASS);
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -23,7 +22,15 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     await client.connect();
-    const coffeeCollection = client.db('hobbyDB').collection('hobbies');
+    const groupCollection = client.db('hobbyDB').collection('hobbies');
+       // Create or Post
+    app.post('/groups',async(req,res)=>{
+        const newGroup=req.body;
+        console.log(newGroup);
+        const result=await groupCollection.insertOne(newGroup);
+        res.send(result);
+
+    });
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } catch (error) {
