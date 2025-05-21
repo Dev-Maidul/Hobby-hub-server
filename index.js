@@ -44,6 +44,43 @@ async function run() {
   res.send(result); 
 });
 
+// Get all groups for a specific user by email
+app.get('/groups/by-email/:email', async (req, res) => {
+  const userEmail = req.params.email;
+ 
+  try {
+    const result = await groupCollection.find({ userEmail: userEmail }).toArray();
+    res.send(result);
+  } catch (error) {
+    console.error("Error fetching groups:", error);
+    res.status(500).send({ error: 'Failed to fetch groups' });
+  }
+});
+// update group
+app.put('/groups/:id',async(req,res)=>{
+        const id=req.params.id;
+        // console.log(id);
+        const filter={_id:new ObjectId(id)};
+        const options={upsert:true};
+        const updatedGroup=req.body;
+        const updatedDoc={
+            $set:updatedGroup
+        }
+        const result=await groupCollection.updateOne(filter,updatedDoc,options);
+        res.send(result);
+    })
+// Delete group 
+app.delete('/groups/:id',async(req,res)=>{
+  const id=req.params.id;
+  const query={_id: new ObjectId(id)};
+        const result=await groupCollection.deleteOne(query);
+        res.send(result);
+})
+
+
+
+
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } catch (error) {
